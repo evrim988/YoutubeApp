@@ -35,6 +35,7 @@ public class Main {
 		System.out.println("Hello World!");
 
 		MainGUI mainGUI = new MainGUI();
+		System.out.println("Merhaba");
 		mainGUI.mainGUI();
 		
 	}
