@@ -32,6 +32,7 @@ public class Main {
 //		//Optional<UserResponseDTO> save = userService.save(userRequestDTO);
 //		userRequestDTO.setPassword("qweqwe");
 		System.out.println("Hello World!");
+		System.out.println("Hello World!");
 
 		MainGUI mainGUI = new MainGUI();
 		mainGUI.mainGUI();
