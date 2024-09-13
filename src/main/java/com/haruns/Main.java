@@ -33,6 +33,7 @@ public class Main {
 //		userRequestDTO.setPassword("qweqwe");
 		
 		MainGUI mainGUI = new MainGUI();
+		System.out.println("Merhaba");
 		mainGUI.mainGUI();
 		
 	}
