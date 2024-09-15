@@ -1,7 +1,9 @@
 package com.haruns.gui;
 
+import com.haruns.controller.CommentController;
 import com.haruns.controller.UserController;
 import com.haruns.controller.VideoController;
+import com.haruns.dto.request.CommentRequestDTO;
 import com.haruns.dto.request.UserRequestDTO;
 import com.haruns.dto.request.VideoSaveRequestDTO;
 import com.haruns.dto.request.VideoUpdateRequestDTO;
@@ -17,12 +19,14 @@ public class UserGUI {
     private UserController userController;
     private static UserGUI getInstance;
     private static VideoController videoController;
+    private static CommentController commentController;
     private User user;
 
 
     private UserGUI() {
         userController = UserController.getInstance();
         videoController = VideoController.getInstance();
+        commentController = CommentController.getInstance();
     }
 
 
@@ -63,7 +67,7 @@ public class UserGUI {
 
     public int userMenu() {
         ConsoleTextUtils.printTitle("KULLANICI MENÜSÜ");
-        ConsoleTextUtils.printMenuOptions("Video ara", "Kanalıma git", "Video ekle", "Videolarımı Görüntüke"
+        ConsoleTextUtils.printMenuOptions("Video izle", "Kanalıma git", "Video ekle", "Videolarımı Görüntüke"
                 , "Video Sil", "Oturumu Kapat");
         return ConsoleTextUtils.getIntUserInput("Seçiminiz: ");
     }
@@ -72,9 +76,7 @@ public class UserGUI {
 
         switch (secim) {
             case 1:
-                videoController.findVideosByTitle(ConsoleTextUtils.getStringUserInput("Ara: "))
-                        //todo: beğeni yorum. eklenecek.
-                        .forEach(System.out::println);
+                videoIzle();
                 userMenuOptions(userMenu());
                 break;
             case 2:
@@ -100,6 +102,39 @@ public class UserGUI {
 
 
         }
+    }
+
+    public void videoIzle() {
+        List<Video> videosByTitle =
+                videoController.findVideosByTitle(ConsoleTextUtils.getStringUserInput("Ara: "));
+        if (!videosByTitle.isEmpty()) {
+            Video video = videoSec(videosByTitle);
+            video.setViews(video.getViews() + 1);
+            System.out.println("View: " + video.getViews());
+            VideoUpdateRequestDTO videoUpdateRequestDTO = new VideoUpdateRequestDTO();
+            videoUpdateRequestDTO.setId(video.getId());
+            videoUpdateRequestDTO.setViews(video.getViews());
+            videoUpdateRequestDTO.setTitle(video.getTitle());
+            videoUpdateRequestDTO.setDescription(video.getDescription());
+            videoUpdateRequestDTO.setUsername(user.getUsername());
+            videoUpdateRequestDTO.setPassword(user.getPassword());
+            videoController.update(videoUpdateRequestDTO);
+            ConsoleTextUtils.printMenuOptions("Beğen", "Yorum Yap","Video yorumlarını göster", "Devam et");
+            int secim = ConsoleTextUtils.getIntUserInput("Seciminiz: ");
+            switch (secim) {
+                case 1:
+                //BURADA KALDIK
+                    break;
+                case 2:
+                    yorumYap(video);
+                    break;
+                case 3:
+                    //videoYorumlariGöster();
+                    break;
+            }
+        }
+
+
     }
 
     public int kullaniciAyarlarMenu() {
@@ -135,8 +170,18 @@ public class UserGUI {
         }
     }
 
+    public void yorumYap(Video video) {
+        CommentRequestDTO commentRequestDTO  = new CommentRequestDTO();
+        String yorum = ConsoleTextUtils.getStringUserInput("Yorumunuz: ");
+        commentRequestDTO.setComment(yorum);
+        commentRequestDTO.setUsername(user.getUsername());
+        commentRequestDTO.setPassword(user.getPassword());
+        commentRequestDTO.setVideoId(video.getId());
+        commentController.save(commentRequestDTO);
+    }
+
     public void videoSil() {
-        Video video = videoSec();
+        Video video = videoSec(videoController.findVideosOfUser(user));
         videoController.delete(video.getId());
     }
 
@@ -198,24 +243,25 @@ public class UserGUI {
         userController.update(userRequestDTO);
     }
 
+
     public void videoTitleDegistir() {
-       Video video = videoSec();
+        Video video = videoSec(videoController.findVideosOfUser(user));
         VideoUpdateRequestDTO videoUpdateRequestDTO = new VideoUpdateRequestDTO();
-       if(video!=null) {
-           String title = ConsoleTextUtils.getStringUserInput("Yeni title: ");
-           videoUpdateRequestDTO.setTitle(title);
-           videoUpdateRequestDTO.setDescription(video.getTitle());
-           videoUpdateRequestDTO.setUsername(user.getUsername());
-           videoUpdateRequestDTO.setPassword(user.getPassword());
-           videoUpdateRequestDTO.setId(video.getId());
-           videoController.update(videoUpdateRequestDTO);
-       }
+        if (video != null) {
+            String title = ConsoleTextUtils.getStringUserInput("Yeni title: ");
+            videoUpdateRequestDTO.setTitle(title);
+            videoUpdateRequestDTO.setDescription(video.getTitle());
+            videoUpdateRequestDTO.setUsername(user.getUsername());
+            videoUpdateRequestDTO.setPassword(user.getPassword());
+            videoUpdateRequestDTO.setId(video.getId());
+            videoController.update(videoUpdateRequestDTO);
+        }
     }
 
     public void videoAciklamaDegistir() {
-        Video video = videoSec();
+        Video video = videoSec(videoController.findVideosOfUser(user));
         VideoUpdateRequestDTO videoUpdateRequestDTO = new VideoUpdateRequestDTO();
-        if(video!=null) {
+        if (video != null) {
             String description = ConsoleTextUtils.getStringUserInput("Yeni açıklama: ");
             videoUpdateRequestDTO.setTitle(video.getTitle());
             videoUpdateRequestDTO.setDescription(description);
@@ -226,10 +272,9 @@ public class UserGUI {
         }
     }
 
-    public Video videoSec() {
+    public Video videoSec(List<Video> videoList) {
         while (true) {
             AtomicInteger sayac = new AtomicInteger(1);
-            List<Video> videoList = videoController.findVideosOfUser(user);
             videoList.forEach(video -> {
                 System.out.println(sayac.getAndIncrement() + " " + video);
             });

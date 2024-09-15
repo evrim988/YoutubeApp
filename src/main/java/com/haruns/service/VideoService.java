@@ -67,6 +67,7 @@ public class VideoService   {
 				video.setTitle(videoUpdateRequestDTO.getTitle());
 				video.setDescription(videoUpdateRequestDTO.getDescription());
 				video.setUser_id(userOpt.get().getId());
+				video.setViews(videoUpdateRequestDTO.getViews());
 				videoRepository.update(video);
 				ConsoleTextUtils.printSuccessMessage("Video güncellendi");
 			}
