@@ -5,7 +5,7 @@ public class Video {
 	private Long user_id;
 	private String title;
 	private String description;
-	private Long views;
+	private long views;
 	
 	public Video() {
 	}

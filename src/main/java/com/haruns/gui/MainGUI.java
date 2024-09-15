@@ -19,32 +19,33 @@ public class MainGUI {
 	}
 	private int mainMenu(){
 			ConsoleTextUtils.printTitle(30,"YOUTUBE");
-			ConsoleTextUtils.printMenuOptions("Vidoları Görüntüle","Video Ara","Giriş Yap","Kayıt Ol","Cıkış");
-			int secim = ConsoleTextUtils.getIntUserInput("Yapmak istediğiniz islemi seçin :");
-		
-			return secim;
+			ConsoleTextUtils.printMenuOptions("Vidoları Görüntüle","Video Ara","Kullanıcı Sayfası","Kayıt Ol","Cıkış");
+
+        return ConsoleTextUtils.getIntUserInput("Yapmak istediğiniz islemi seçin :");
 	}
 	
 	private void mainMenuOptions(int secim){
 		switch (secim){
 			case 1:{
 				videoController.getTrendVideos().forEach(System.out::println);
+				mainMenuOptions(mainMenu());
 				break;
 			}
 			case 2:{
 				String aranacakVideo = ConsoleTextUtils.getStringUserInput("Aranacak videonun adını giriniz : ");
 				videoController.findVideosByTitle(aranacakVideo);
+				mainMenuOptions(mainMenu());
 				break;
 			}
 			case 3:{
-				User user = userGUI.doLogin();
-				if (user != null) {
-					// UserGUI'deki UserMenu'ye dönecek.
-				}
+
+				userGUI.userModule();
+				mainMenuOptions(mainMenu());
 				break;
 			}
 			case 4:{
 				userGUI.register();
+				mainMenuOptions(mainMenu());
 				break;
 			}
 			case 5:{
@@ -53,6 +54,7 @@ public class MainGUI {
 			}
 			default:{
 				ConsoleTextUtils.printErrorMessage("Lütfen geçerli bir değer giriniz...");
+				mainMenuOptions(mainMenu());
 			}
 			
 		}

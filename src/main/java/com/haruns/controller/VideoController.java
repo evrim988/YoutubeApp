@@ -3,6 +3,7 @@ package com.haruns.controller;
 import com.haruns.dto.request.VideoSaveRequestDTO;
 import com.haruns.dto.request.VideoUpdateRequestDTO;
 import com.haruns.dto.response.VideoResponseDTO;
+import com.haruns.entity.User;
 import com.haruns.entity.Video;
 import com.haruns.service.VideoService;
 import com.haruns.utility.ConsoleTextUtils;
@@ -55,5 +56,8 @@ public class VideoController {
 	}
 	public List<Video> findVideosByTitle(String baslik){
 		return videoService.findVideosByTitle(baslik);
+	}
+	public List<Video> findVideosOfUser(User user){
+		return videoService.findVideosOfUser(user);
 	}
 }

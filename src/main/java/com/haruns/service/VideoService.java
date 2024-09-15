@@ -102,4 +102,12 @@ public class VideoService   {
 		}
 		return videosByTitle;
 	}
+
+	public List<Video> findVideosOfUser(User user){
+		List<Video> videosOfUser = videoRepository.findVideosOfUser(user);
+		if(videosOfUser.isEmpty()){
+			System.out.println("Yüklediğiniz bir video bulunmamaktadır.");
+		}
+		return videosOfUser;
+	}
 }

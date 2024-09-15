@@ -1,5 +1,6 @@
 package com.haruns.repository;
 
+import com.haruns.entity.User;
 import com.haruns.entity.Video;
 import com.haruns.utility.ConnectionProvider;
 import com.haruns.utility.ConsoleTextUtils;
@@ -124,9 +125,10 @@ public class VideoRepository implements ICrud<Video> {
 		return videoList;
 	}
 	public List<Video> findVideosByTitle(String baslik){
-		sql="SELECT * FROM tblvideo WHERE title LIKE '%baslik%'";
+		sql="SELECT * FROM tblvideo WHERE title ILIKE ?";
 		List<Video> videoList = new ArrayList<>();
 		try(PreparedStatement preparedStatement = connectionProvider.getPreparedStatement(sql)){
+			preparedStatement.setString(1,"%"+baslik+"%");
 			ResultSet rs = preparedStatement.executeQuery();
 			while(rs.next()) {
 				Long id = rs.getLong("id");
@@ -142,5 +144,27 @@ public class VideoRepository implements ICrud<Video> {
 		}
 		return videoList;
 	}
+
+	public List<Video> findVideosOfUser(User user) {
+		sql = "SELECT * FROM tblvideo WHERE user_id=?";
+		List<Video> videoList = new ArrayList<>();
+		try(PreparedStatement preparedStatement = connectionProvider.getPreparedStatement(sql)){
+			preparedStatement.setLong(1,user.getId());
+			ResultSet rs = preparedStatement.executeQuery();
+			while(rs.next()) {
+				Long id = rs.getLong("id");
+				Long user_id = rs.getLong("user_id");
+				String title = rs.getString("title");
+				String description = rs.getString("description");
+				Long views = rs.getLong("views");
+				videoList.add(new Video(id, user_id,title,description,views));
+			}
+		} catch (SQLException e) {
+			ConsoleTextUtils.printErrorMessage("VideoRepository: Aradığınız video bulunurken hata oluştu.");
+		}
+		return videoList;
+	}
+
+
 	
 }
