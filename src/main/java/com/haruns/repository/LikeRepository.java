@@ -1,5 +1,6 @@
 package com.haruns.repository;
 
+import com.haruns.dto.request.LikeRequestDTO;
 import com.haruns.entity.Like;
 import com.haruns.utility.ConnectionProvider;
 import com.haruns.utility.ConsoleTextUtils;
@@ -23,10 +24,11 @@ public class LikeRepository implements ICrud<Like> {
 	
 	@Override
 	public Optional<Like> save(Like like) {
-		sql = "INSERT INTO tbllike(user_id, video_id) VALUES (?,?)";
+		sql = "INSERT INTO tbllike(user_id, video_id,status) VALUES (?,?,?)";
 		try (PreparedStatement preparedStatement = connectionProvider.getPreparedStatement(sql)) {
 			preparedStatement.setLong(1,like.getUser_id());
 			preparedStatement.setLong(2,like.getVideo_id());
+			preparedStatement.setInt(3,like.getStatus());
 			preparedStatement.executeUpdate();
 			
 		} catch (SQLException e) {
@@ -49,7 +51,18 @@ public class LikeRepository implements ICrud<Like> {
 	
 	@Override
 	public Optional<Like> update(Like like) {
-		return Optional.empty();
+		sql="UPDATE tbllike SET user_id=?, video_id=?,status=? WHERE id=?";
+		try(PreparedStatement preparedStatement= connectionProvider.getPreparedStatement(sql)) {
+			preparedStatement.setLong(1,like.getUser_id());
+			preparedStatement.setLong(2,like.getVideo_id());
+			preparedStatement.setInt(3,like.getStatus());
+			preparedStatement.setLong(4,like.getId());
+			preparedStatement.executeUpdate();
+		}
+		catch (SQLException e) {
+			ConsoleTextUtils.printErrorMessage("Repository : Like güncellenirken hata oluştu. "+e.getMessage());
+		}
+		return Optional.ofNullable(like);
 	}
 	
 	@Override
@@ -62,7 +75,8 @@ public class LikeRepository implements ICrud<Like> {
 				long id = rs.getLong("id");
 				long user_id = rs.getLong("user_id");
 				long video_id = rs.getLong("video_id");
-				Like like = new Like(id,user_id,video_id);
+				int status = rs.getInt("status");
+				Like like = new Like(id,user_id,video_id,status);
 				likeList.add(like);
 			}
 			
@@ -81,12 +95,47 @@ public class LikeRepository implements ICrud<Like> {
 			if (rs.next()) {
 				long user_id = rs.getLong("user_id");
 				long video_id = rs.getLong("video_id");
-				return Optional.of(new Like(bulunacakLikeId,user_id,video_id));
+				int status = rs.getInt("status");
+				return Optional.of(new Like(bulunacakLikeId,user_id,video_id,status));
 			}
 			
 		} catch (SQLException e) {
 			ConsoleTextUtils.printErrorMessage("Repository: Like bulunamadı... " + e.getMessage());
 		}
 		return Optional.empty();
+	}
+	
+	public boolean isLikeExist(Long user_id,Long video_id) {
+		sql = "SELECT * FROM tbllike WHERE user_id=? AND video_id=?";
+		try (PreparedStatement preparedStatement = connectionProvider.getPreparedStatement(sql)){
+			preparedStatement.setLong(1,user_id);
+			preparedStatement.setLong(2,video_id);
+			ResultSet rs = preparedStatement.executeQuery();
+			if (rs.next()) {
+				return true;
+			}
+			
+		} catch (SQLException e) {
+			ConsoleTextUtils.printErrorMessage("Repository: Like bulunamadı... " + e.getMessage());
+		}
+		return false;
+	}
+	
+	public Like findByUserIdAndVideoId(Long user_id,Long video_id) {
+		sql = "SELECT * FROM tbllike WHERE user_id=? AND video_id=?";
+		try (PreparedStatement preparedStatement = connectionProvider.getPreparedStatement(sql)){
+			preparedStatement.setLong(1,user_id);
+			preparedStatement.setLong(2,video_id);
+			ResultSet rs = preparedStatement.executeQuery();
+			if (rs.next()) {
+				long id = rs.getLong("id");
+				int status = rs.getInt("status");
+				return new Like(id,user_id,video_id,status);
+			}
+			
+		} catch (SQLException e) {
+			ConsoleTextUtils.printErrorMessage("Repository: Like bulunamadı... " + e.getMessage());
+		}
+		return null;
 	}
 }

@@ -111,4 +111,8 @@ public class VideoService   {
 		}
 		return videosOfUser;
 	}
+	public void goruntulenmeArttir(Video video) {
+		videoRepository.goruntulenmeArttir(video);
+	}
+	
 }

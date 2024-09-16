@@ -3,6 +3,7 @@ package com.haruns.controller;
 import com.haruns.dto.request.UserRequestDTO;
 import com.haruns.dto.response.UserResponseDTO;
 import com.haruns.entity.User;
+import com.haruns.entity.Video;
 import com.haruns.service.UserService;
 import com.haruns.utility.ConsoleTextUtils;
 
@@ -63,4 +64,7 @@ public class UserController {
 		return userService.isExistEmail(email);
 	}
 	
+	public List<Video>  getLikedVideosOfUser(User user){
+		return userService.getLikedVideosOfUser(user);
+	}
 }

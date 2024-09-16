@@ -3,6 +3,7 @@ package com.haruns.service;
 import com.haruns.dto.request.UserRequestDTO;
 import com.haruns.dto.response.UserResponseDTO;
 import com.haruns.entity.User;
+import com.haruns.entity.Video;
 import com.haruns.repository.UserRepository;
 import com.haruns.utility.ConsoleTextUtils;
 import com.haruns.utility.ICrud;
@@ -118,5 +119,11 @@ public class UserService  {
 		}
 		return userRepository.isExistEmail(email);
 	}
-	
+	public List<Video>  getLikedVideosOfUser(User user){
+		List<Video> likedVideosOfUser = userRepository.getLikedVideosOfUser(user);
+		if (likedVideosOfUser.isEmpty()){
+			ConsoleTextUtils.printErrorMessage("Kullanıcının beğendiği video yok.");
+		}
+		return likedVideosOfUser;
+	}
 }

@@ -1,12 +1,11 @@
 package com.haruns.gui;
 
 import com.haruns.controller.CommentController;
+import com.haruns.controller.LikeController;
 import com.haruns.controller.UserController;
 import com.haruns.controller.VideoController;
-import com.haruns.dto.request.CommentRequestDTO;
-import com.haruns.dto.request.UserRequestDTO;
-import com.haruns.dto.request.VideoSaveRequestDTO;
-import com.haruns.dto.request.VideoUpdateRequestDTO;
+import com.haruns.dto.request.*;
+import com.haruns.entity.Like;
 import com.haruns.entity.User;
 import com.haruns.entity.Video;
 import com.haruns.utility.ConsoleTextUtils;
@@ -16,17 +15,20 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class UserGUI {
-    private UserController userController;
+    private UserController userController=UserController.getInstance();
     private static UserGUI getInstance;
-    private static VideoController videoController;
-    private static CommentController commentController;
-    private User user;
+    private static VideoController videoController=VideoController.getInstance();
+    private static CommentController commentController=CommentController.getInstance();
+    private static LikeController likeController=LikeController.getInstance();
+   // private  MainGUI mainGUI=MainGUI.getInstance();
+    private  User user;
 
 
     private UserGUI() {
-        userController = UserController.getInstance();
-        videoController = VideoController.getInstance();
-        commentController = CommentController.getInstance();
+//        userController = UserController.getInstance();
+//        videoController = VideoController.getInstance();
+//        commentController = CommentController.getInstance();
+//        likeController=LikeController.getInstance();
     }
 
 
@@ -76,7 +78,8 @@ public class UserGUI {
 
         switch (secim) {
             case 1:
-                videoIzle();
+                Video video = getVideo(videoController.findVideosByTitle(ConsoleTextUtils.getStringUserInput("Ara: ")));
+                videoIzleOptions(user,videoIzle(),video);
                 userMenuOptions(userMenu());
                 break;
             case 2:
@@ -104,37 +107,134 @@ public class UserGUI {
         }
     }
 
-    public void videoIzle() {
-        List<Video> videosByTitle =
-                videoController.findVideosByTitle(ConsoleTextUtils.getStringUserInput("Ara: "));
-        if (!videosByTitle.isEmpty()) {
-            Video video = videoSec(videosByTitle);
-            video.setViews(video.getViews() + 1);
-            System.out.println("View: " + video.getViews());
-            VideoUpdateRequestDTO videoUpdateRequestDTO = new VideoUpdateRequestDTO();
-            videoUpdateRequestDTO.setId(video.getId());
-            videoUpdateRequestDTO.setViews(video.getViews());
-            videoUpdateRequestDTO.setTitle(video.getTitle());
-            videoUpdateRequestDTO.setDescription(video.getDescription());
-            videoUpdateRequestDTO.setUsername(user.getUsername());
-            videoUpdateRequestDTO.setPassword(user.getPassword());
-            videoController.update(videoUpdateRequestDTO);
-            ConsoleTextUtils.printMenuOptions("Beğen", "Yorum Yap","Video yorumlarını göster", "Devam et");
-            int secim = ConsoleTextUtils.getIntUserInput("Seciminiz: ");
-            switch (secim) {
-                case 1:
-                //BURADA KALDIK
-                    break;
-                case 2:
+    public int videoIzle() {
+        int secim=-1;
+            ConsoleTextUtils.printMenuOptions("Beğen Menüsü", "Yorum Yap","Video yorumlarını göster", "Devam et");
+            secim = ConsoleTextUtils.getIntUserInput("Seciminiz: ");
+        return secim;
+    }
+    
+    public Video getVideo(List<Video> videosByTitle) {
+        Video video = videoSec(videosByTitle);
+        videoController.goruntulenmeArttir(video);
+        return video;
+    }
+    
+    public void videoIzleOptions(User kullanici, int secim, Video video) {
+        switch (secim) {
+            case 1:
+                if (kullanici!=null){
+                begen(kullanici, video);
+                }
+                else {
+                    String kullaniciAdi = ConsoleTextUtils.getStringUserInput("Kullanıcı adınız : ");
+                    String sifre = ConsoleTextUtils.getStringUserInput("Parolanız : ");
+                    userController.findByUsernameAndPassword(kullaniciAdi, sifre).ifPresentOrElse((user1 -> {
+                        begen(user1, video);
+                    }), () -> userMenuOptions(6));
+                }
+                break;
+            case 2:
+                if (kullanici!=null){
                     yorumYap(video);
-                    break;
-                case 3:
-                    //videoYorumlariGöster();
-                    break;
+                }
+                else {
+                    String username = ConsoleTextUtils.getStringUserInput("Kullanıcı adınız : ");
+                    String pw = ConsoleTextUtils.getStringUserInput("Parolanız : ");
+                    user = userController.findByUsernameAndPassword(username, pw).get();
+                    userController.findByUsernameAndPassword(username, pw).ifPresentOrElse((user1 -> {
+                        yorumYap(video);
+                    }), () -> userMenuOptions(6));
+                }
+                break;
+            case 3:
+                commentController.findCommentOfVideo(video.getId()).forEach(System.out::println);
+                break;
+        }
+    }
+    
+    public void begen(User user,Video video){
+        LikeRequestDTO likeRequestDTO=new LikeRequestDTO();
+        likeRequestDTO.setUser_id(user.getId());
+        likeRequestDTO.setVideo_id(video.getId());
+        boolean likeExist = likeController.isLikeExist(user.getId(), video.getId());
+        if (likeExist){
+            Like like = likeController.findByUserIdAndVideoId(user.getId(), video.getId());
+            likeRequestDTO.setId(like.getId());
+            if (like.getStatus()==1){
+                ConsoleTextUtils.printMenuOptions("Beğeniyi geri çek","Dislike et","Devam et");
+                int secim = ConsoleTextUtils.getIntUserInput("Seciminiz: ");
+                switch (secim){
+                    case 1:{
+                        
+                        likeRequestDTO.setStatus(4);
+                        likeController.update(likeRequestDTO);
+                        ConsoleTextUtils.printSuccessMessage("Begeni geri çekildi");
+                        break;
+                    }
+                    case 2:{
+                        likeRequestDTO.setStatus(5);
+                        likeController.update(likeRequestDTO);
+                        ConsoleTextUtils.printSuccessMessage("Dislike Atıldı");
+                        break;
+                    }
+                }
+            }
+            else if (like.getStatus()==0) {
+                ConsoleTextUtils.printMenuOptions("Beğen","Dislike et","Devam et");
+                int secim = ConsoleTextUtils.getIntUserInput("Seciminiz: ");
+                switch (secim){
+                    case 1:{
+                        likeRequestDTO.setStatus(1);
+                        likeController.update(likeRequestDTO);
+                        ConsoleTextUtils.printSuccessMessage("Video beğenildi.");
+                        break;
+                    }
+                    case 2:{
+                        likeRequestDTO.setStatus(-1);
+                        likeController.update(likeRequestDTO);
+                        ConsoleTextUtils.printSuccessMessage("Dislike Atıldı");
+                        break;
+                    }
+                }
+            }
+            else { // -1 ise
+                ConsoleTextUtils.printMenuOptions("Dislike'ı geri çek","Beğen","Devam et");
+                int secim = ConsoleTextUtils.getIntUserInput("Seciminiz: ");
+                switch (secim){
+                    case 1:{
+                        likeRequestDTO.setStatus(2);
+                        likeController.update(likeRequestDTO);
+                        ConsoleTextUtils.printSuccessMessage("Dislike geri çekildi.");
+                        break;
+                    }
+                    case 2:{
+                        likeRequestDTO.setStatus(3);
+                        likeController.update(likeRequestDTO);
+                        ConsoleTextUtils.printSuccessMessage("Video beğenildi.");
+                        break;
+                    }
+                }
             }
         }
-
-
+        else {
+            ConsoleTextUtils.printMenuOptions("Beğen","Dislike","Devam et");
+            int secim = ConsoleTextUtils.getIntUserInput("Seciminiz: ");
+            switch (secim){
+                case 1:{
+                    likeRequestDTO.setStatus(1);
+                    likeController.save(likeRequestDTO);
+                    ConsoleTextUtils.printSuccessMessage("Video beğenildi.");
+                    break;
+                }
+                case 2:{
+                    likeRequestDTO.setStatus(-1);
+                    likeController.save(likeRequestDTO);
+                    ConsoleTextUtils.printSuccessMessage("Dislike atıldı.");
+                    break;
+                }
+            }
+        }
     }
 
     public int kullaniciAyarlarMenu() {
@@ -147,7 +247,7 @@ public class UserGUI {
     public void kullaniciAyarlarMenuOptions(int secim) {
         switch (secim) {
             case 1:
-                //beğendiğim videolar
+                userController.getLikedVideosOfUser(user).forEach(System.out::println);
                 break;
             case 2:
                 sifreDegistir();

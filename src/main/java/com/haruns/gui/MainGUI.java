@@ -2,18 +2,26 @@ package com.haruns.gui;
 
 import com.haruns.controller.VideoController;
 import com.haruns.entity.User;
+import com.haruns.entity.Video;
 import com.haruns.utility.ConsoleTextUtils;
 
 
 
 public class MainGUI {
-	VideoController videoController;
-	UserGUI userGUI;
+	VideoController videoController=VideoController.getInstance();
+	UserGUI userGUI=UserGUI.getInstance();
+	User user=null;
+	private static MainGUI getInstance;
 	
-	public MainGUI() {
-		videoController=VideoController.getInstance();
-		this.userGUI=UserGUI.getInstance();
+	
+	
+	public static MainGUI getInstance() {
+		if(getInstance==null) {
+			getInstance=new MainGUI();
+		}
+		return getInstance;
 	}
+	
 	public void mainGUI(){
 		mainMenuOptions(mainMenu());
 	}
@@ -33,7 +41,9 @@ public class MainGUI {
 			}
 			case 2:{
 				String aranacakVideo = ConsoleTextUtils.getStringUserInput("Aranacak videonun adını giriniz : ");
-				videoController.findVideosByTitle(aranacakVideo);
+				Video video = userGUI.getVideo(videoController.findVideosByTitle(aranacakVideo));
+				userGUI.videoIzleOptions(user, userGUI.videoIzle(),video);
+				
 				mainMenuOptions(mainMenu());
 				break;
 			}

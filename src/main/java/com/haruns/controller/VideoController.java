@@ -60,4 +60,8 @@ public class VideoController {
 	public List<Video> findVideosOfUser(User user){
 		return videoService.findVideosOfUser(user);
 	}
+	
+	public void goruntulenmeArttir(Video video) {
+		videoService.goruntulenmeArttir(video);
+	}
 }

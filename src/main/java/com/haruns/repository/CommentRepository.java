@@ -102,4 +102,23 @@ public class CommentRepository implements ICrud<Comment> {
 		}
 		return Optional.empty();
 	}
+	
+	public List<Comment> findCommentOfVideo(Long video_id){
+		sql="SELECT * FROM tblcomment WHERE video_id=?";
+		List<Comment> commentList = new ArrayList<>();
+		try(PreparedStatement preparedStatement= connectionProvider.getPreparedStatement(sql)) {
+			preparedStatement.setLong(1,video_id);
+			ResultSet rs = preparedStatement.executeQuery();
+			while (rs.next()){
+				long id = rs.getLong("id");
+				long user_id = rs.getLong("user_id");
+				String comment = rs.getString("comment");
+				commentList.add(new Comment(id,user_id,video_id,comment));
+			}
+		}
+		catch (SQLException e) {
+			ConsoleTextUtils.printErrorMessage("Repository : Yorumlar listelenirken hata oluştu. "+e.getMessage());
+		}
+		return commentList;
+	}
 }

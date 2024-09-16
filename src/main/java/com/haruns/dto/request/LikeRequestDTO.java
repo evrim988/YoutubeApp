@@ -1,24 +1,12 @@
-package com.haruns.entity;
+package com.haruns.dto.request;
 
-public class Like {
+public class LikeRequestDTO {
 	private Long id;
 	private Long user_id;
 	private Long video_id;
-	private int status; // -1 dislike 1 like 2 dislike to nötr 3 dislike to like 4 like to nötr 5 like to dislike
-	public Like() {
-	}
+	private int status;
 	
-	public Like(Long user_id, Long video_id, int status) {
-		this.user_id = user_id;
-		this.video_id = video_id;
-		this.status = status;
-	}
-	
-	public Like(Long id, Long user_id, Long video_id, int status) {
-		this.id = id;
-		this.user_id = user_id;
-		this.video_id = video_id;
-		this.status = status;
+	public LikeRequestDTO() {
 	}
 	
 	public int getStatus() {
@@ -52,5 +40,4 @@ public class Like {
 	public void setVideo_id(Long video_id) {
 		this.video_id = video_id;
 	}
-	
 }

@@ -49,4 +49,8 @@ public class CommentController {
     public Optional<Comment> findById(Long id) {
         return commentService.findById(id);
     }
+    
+    public List<Comment> findCommentOfVideo(Long video_id){
+        return commentService.findCommentOfVideo(video_id);
+    }
 }

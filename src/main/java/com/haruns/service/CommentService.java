@@ -70,4 +70,8 @@ public class CommentService {
     public Optional<Comment> findById(Long id) {
         return commentRepository.findById(id);
     }
+    
+    public List<Comment> findCommentOfVideo(Long video_id){
+        return commentRepository.findCommentOfVideo(video_id);
+    }
 }
