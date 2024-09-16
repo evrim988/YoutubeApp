@@ -80,4 +80,12 @@ public class LikeService  {
 	public Like findByUserIdAndVideoId(Long user_id,Long video_id) {
 		return likeRepository.findByUserIdAndVideoId(user_id,video_id);
 	}
+
+	public Long countLikes(Long videoId){
+		return likeRepository.countLikes(videoId);
+	}
+
+	public Long countDislikes(Long videoId){
+		return likeRepository.countDislikes(videoId);
+	}
 }

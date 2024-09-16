@@ -1,5 +1,6 @@
 package com.haruns;
 
+import com.haruns.controller.LikeController;
 import com.haruns.dto.request.UserRequestDTO;
 import com.haruns.dto.response.UserResponseDTO;
 import com.haruns.entity.Comment;
@@ -7,12 +8,15 @@ import com.haruns.entity.Like;
 import com.haruns.entity.User;
 import com.haruns.entity.Video;
 import com.haruns.gui.MainGUI;
+import com.haruns.model.VideoModel;
 import com.haruns.repository.CommentRepository;
 import com.haruns.repository.LikeRepository;
 import com.haruns.repository.UserRepository;
 import com.haruns.repository.VideoRepository;
 import com.haruns.service.UserService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class Main {
@@ -34,6 +38,11 @@ public class Main {
 		
 		MainGUI mainGUI = new MainGUI();
 		mainGUI.mainGUI();
-		
+
+
+
+
+
 	}
+
 }

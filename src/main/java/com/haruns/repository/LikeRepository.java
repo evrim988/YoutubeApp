@@ -2,6 +2,7 @@ package com.haruns.repository;
 
 import com.haruns.dto.request.LikeRequestDTO;
 import com.haruns.entity.Like;
+import com.haruns.entity.Video;
 import com.haruns.utility.ConnectionProvider;
 import com.haruns.utility.ConsoleTextUtils;
 import com.haruns.utility.ICrud;
@@ -138,4 +139,38 @@ public class LikeRepository implements ICrud<Like> {
 		}
 		return null;
 	}
+
+	public Long countLikes(Long videoId){
+		sql = "SELECT COUNT(*) FROM tbllike WHERE video_id=? AND (status=1 OR status=3)";
+		Long sayac = 0L;
+		try (PreparedStatement preparedStatement = connectionProvider.getPreparedStatement(sql)){
+			preparedStatement.setLong(1,videoId);
+			ResultSet rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				sayac += rs.getLong(1);
+			}
+
+		} catch (SQLException e) {
+			ConsoleTextUtils.printErrorMessage("Repository: Like bulunamadı... " + e.getMessage());
+		}
+		return sayac;
+	}
+
+	public Long countDislikes(Long videoId){
+		sql = "SELECT COUNT(*) FROM tbllike WHERE video_id=? AND (status=-1 OR status=5)";
+		Long sayac = 0L;
+		try (PreparedStatement preparedStatement = connectionProvider.getPreparedStatement(sql)){
+			preparedStatement.setLong(1,videoId);
+			ResultSet rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				sayac += rs.getLong(1);
+			}
+
+		} catch (SQLException e) {
+			ConsoleTextUtils.printErrorMessage("Repository: Like bulunamadı... " + e.getMessage());
+		}
+		return sayac;
+	}
+
+
 }

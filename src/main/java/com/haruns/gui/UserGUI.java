@@ -8,6 +8,7 @@ import com.haruns.dto.request.*;
 import com.haruns.entity.Like;
 import com.haruns.entity.User;
 import com.haruns.entity.Video;
+import com.haruns.model.VideoModel;
 import com.haruns.utility.ConsoleTextUtils;
 
 import java.util.List;
@@ -79,7 +80,10 @@ public class UserGUI {
         switch (secim) {
             case 1:
                 Video video = getVideo(videoController.findVideosByTitle(ConsoleTextUtils.getStringUserInput("Ara: ")));
-                videoIzleOptions(user,videoIzle(),video);
+                if(video!=null) {
+                    new VideoModel(user,video).displayVideo();
+                    videoIzleOptions(user,videoIzle(),video);
+                }
                 userMenuOptions(userMenu());
                 break;
             case 2:
@@ -116,6 +120,9 @@ public class UserGUI {
     
     public Video getVideo(List<Video> videosByTitle) {
         Video video = videoSec(videosByTitle);
+        if(video==null){
+            return null;
+        }
         videoController.goruntulenmeArttir(video);
         return video;
     }
@@ -375,6 +382,10 @@ public class UserGUI {
     public Video videoSec(List<Video> videoList) {
         while (true) {
             AtomicInteger sayac = new AtomicInteger(1);
+            if(videoList.isEmpty()){
+                System.out.println("Aramaya uygun video bulunamadı.");
+                return null;
+            }
             videoList.forEach(video -> {
                 System.out.println(sayac.getAndIncrement() + " " + video);
             });

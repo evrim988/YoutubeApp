@@ -74,4 +74,8 @@ public class CommentService {
     public List<Comment> findCommentOfVideo(Long video_id){
         return commentRepository.findCommentOfVideo(video_id);
     }
+
+    public Long countCommentsOfVideo(Long video_id){
+        return commentRepository.countCommentsOfVideo(video_id);
+    }
 }

@@ -121,4 +121,20 @@ public class CommentRepository implements ICrud<Comment> {
 		}
 		return commentList;
 	}
+	public Long countCommentsOfVideo(Long video_id){
+		sql="SELECT COUNT(*) FROM tblcomment WHERE video_id=?";
+		Long sayac = 0L;
+		try (PreparedStatement preparedStatement = connectionProvider.getPreparedStatement(sql)){
+			preparedStatement.setLong(1,video_id);
+			ResultSet rs = preparedStatement.executeQuery();
+			while (rs.next()) {
+				sayac += rs.getLong(1);
+			}
+
+		} catch (SQLException e) {
+			ConsoleTextUtils.printErrorMessage("Repository: Comment bulunamadı... " + e.getMessage());
+		}
+		return sayac;
+	}
+
 }

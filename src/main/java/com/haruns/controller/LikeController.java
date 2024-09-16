@@ -48,4 +48,11 @@ public class LikeController {
 	public Like findByUserIdAndVideoId(Long user_id,Long video_id) {
 		return likeService.findByUserIdAndVideoId(user_id,video_id);
 	}
+	public Long countLikes(Long videoId){
+		return likeService.countLikes(videoId);
+	}
+
+	public Long countDislikes(Long videoId){
+		return likeService.countDislikes(videoId);
+	}
 }
