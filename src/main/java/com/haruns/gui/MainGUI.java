@@ -41,7 +41,7 @@ public class MainGUI {
 			}
 			case 2:{
 				String aranacakVideo = ConsoleTextUtils.getStringUserInput("Aranacak videonun adını giriniz : ");
-				Video video = userGUI.getVideo(videoController.findVideosByTitle(aranacakVideo));
+				Video video = userGUI.goruntulenmeArttir(videoController.findVideosByTitle(aranacakVideo));
 				userGUI.videoIzleOptions(user, userGUI.videoIzle(),video);
 				
 				mainMenuOptions(mainMenu());

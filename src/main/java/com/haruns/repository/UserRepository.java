@@ -207,26 +207,7 @@ public class UserRepository implements ICrud<User> {
 		return Optional.empty();
 	}
 	
-	public List<Video> getVideosOfUser(User user) {
-		sql = "SELECT * FROM tblvideo WHERE user_id=?";
-		List<Video> videoList = new ArrayList<>();
-		try (PreparedStatement preparedStatement = connectionProvider.getPreparedStatement(sql)) {
-			preparedStatement.setLong(1, user.getId());
-			ResultSet rs = preparedStatement.executeQuery();
-			while (rs.next()) {
-				long id = rs.getLong("id");
-				long user_id = rs.getLong("user_id");
-				String title = rs.getString("title");
-				String description = rs.getString("description");
-				long views = rs.getLong("views");
-				videoList.add(new Video(id, user_id, title, description, views));
-			}
-		}
-		catch (SQLException e) {
-			ConsoleTextUtils.printErrorMessage("Repository : Kullanıcı bulunamadı. " + e.getMessage());
-		}
-		return videoList;
-	}
+
 	
 	public List<Video> getLikedVideosOfUser(User user) {
 		sql =

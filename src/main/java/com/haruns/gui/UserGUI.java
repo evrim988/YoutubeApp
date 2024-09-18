@@ -76,7 +76,7 @@ public class UserGUI {
 
         switch (secim) {
             case 1:
-                Video video = getVideo(videoController.findVideosByTitle(ConsoleTextUtils.getStringUserInput("Ara: ")));
+                Video video = goruntulenmeArttir(videoController.findVideosByTitle(ConsoleTextUtils.getStringUserInput("Ara: ")));
                 if(video!=null) {
                     new VideoModel(user,video).displayVideo();
                     videoIzleOptions(user,videoIzle(),video);
@@ -84,7 +84,7 @@ public class UserGUI {
                 userMenuOptions(userMenu());
                 break;
             case 2:
-                kullaniciAyarlarMenuOptions(kullaniciAyarlarMenu());
+                userProfileMenuOptions(userProfileMenu());
                 userMenuOptions(userMenu());
                 break;
             case 3:
@@ -123,10 +123,7 @@ public class UserGUI {
     public User findUser(){
         String kullanici = ConsoleTextUtils.getStringUserInput("Ara: ");
         Optional<User> byUsername = userController.findByUsername(kullanici);
-	    if (byUsername.isPresent()) {
-		    return byUsername.get();
-	    }
-        return null;
+        return byUsername.orElse(null);
     }
     public int videoIzle() {
         int secim=-1;
@@ -135,7 +132,7 @@ public class UserGUI {
         return secim;
     }
     
-    public Video getVideo(List<Video> videosByTitle) {
+    public Video goruntulenmeArttir(List<Video> videosByTitle) {
         Video video = videoSec(videosByTitle);
         if(video==null){
             return null;
@@ -261,33 +258,33 @@ public class UserGUI {
         }
     }
 
-    public int kullaniciAyarlarMenu() {
+    public int userProfileMenu() {
         ConsoleTextUtils.printTitle("KANALIM");
         ConsoleTextUtils.printMenuOptions("Beğendiğim videolar", "Şifre değiştir",
                 "Video title değiştir", "Video açıklama değiştir","Attığım yorumu düzenle", "Geri Dön");
         return ConsoleTextUtils.getIntUserInput("Seçiminiz: ");
     }
 
-    public void kullaniciAyarlarMenuOptions(int secim) {
+    public void userProfileMenuOptions(int secim) {
         switch (secim) {
             case 1:
                 userController.getLikedVideosOfUser(user).forEach(System.out::println);
                 break;
             case 2:
                 sifreDegistir();
-                kullaniciAyarlarMenuOptions(kullaniciAyarlarMenu());
+                userProfileMenuOptions(userProfileMenu());
                 break;
             case 3:
                 videoTitleDegistir();
-                kullaniciAyarlarMenuOptions(kullaniciAyarlarMenu());
+                userProfileMenuOptions(userProfileMenu());
                 break;
             case 4:
                 videoAciklamaDegistir();
-                kullaniciAyarlarMenuOptions(kullaniciAyarlarMenu());
+                userProfileMenuOptions(userProfileMenu());
                 break;
             case 5:{
                 yorumDuzenle();
-                kullaniciAyarlarMenuOptions(kullaniciAyarlarMenu());
+                userProfileMenuOptions(userProfileMenu());
                 break;
             }
             case 6:
@@ -295,7 +292,7 @@ public class UserGUI {
                 return;
             default:
                 System.out.println("Lütfen geçerli seçim yapınız.");
-                kullaniciAyarlarMenuOptions(kullaniciAyarlarMenu());
+                userProfileMenuOptions(userProfileMenu());
         }
     }
     
