@@ -103,6 +103,7 @@ public class UserGUI {
                 User user1 = findUser();
                 if(user1!=null){
                     UserModel userModel = new UserModel(user1);
+                    userMenuOptions(userMenu());
                     userModel.displayUser();
                 }
                 else {

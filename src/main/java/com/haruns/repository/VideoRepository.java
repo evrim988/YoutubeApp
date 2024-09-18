@@ -16,9 +16,16 @@ import java.util.Optional;
 public class VideoRepository implements ICrud<Video> {
 	private final ConnectionProvider connectionProvider;
 	private String sql;
+	private static VideoRepository instance;
 	
-	public VideoRepository() {
+	private VideoRepository() {
 		this.connectionProvider = ConnectionProvider.getInstance();
+	}
+	public static VideoRepository getInstance() {
+		if (instance == null) {
+			instance = new VideoRepository();
+		}
+		return instance;
 	}
 	
 	@Override

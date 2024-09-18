@@ -15,11 +15,18 @@ public class LikeService  {
 	LikeRepository likeRepository;
 	VideoService videoService;
 	UserService userService;
+	private static LikeService instance;
 	
-	public LikeService() {
-		likeRepository=new LikeRepository();
-		videoService=new VideoService();
-		userService=new UserService();
+	private LikeService() {
+		likeRepository=LikeRepository.getInstance();
+		videoService=VideoService.getInstance();
+		userService=UserService.getInstance();
+	}
+	public static LikeService getInstance() {
+		if (instance == null) {
+			instance = new LikeService();
+		}
+		return instance;
 	}
 	
 	

@@ -38,6 +38,8 @@ public class Main {
 		
 		MainGUI mainGUI = new MainGUI();
 		mainGUI.mainGUI();
+		//ctrl+shift f10 ile maini ddirek
+
 
 
 		

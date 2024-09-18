@@ -18,7 +18,7 @@ public class CommentGarbageController {
 	}
 	
 	public CommentGarbageController() {
-		commentGarbageService=new CommentGarbageService();
+		commentGarbageService=CommentGarbageService.getInstance();
 	}
 	public Optional<CommentGarbage> save(CommentGarbage commentGarbage) {
 		return 	commentGarbageService.save(commentGarbage);

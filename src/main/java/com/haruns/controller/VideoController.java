@@ -24,7 +24,7 @@ public class VideoController {
 	}
 	
 	private VideoController() {
-		this.videoService=new VideoService();
+		this.videoService=VideoService.getInstance();
 	}
 	
 	public Optional<VideoResponseDTO> save(VideoSaveRequestDTO videoSaveRequestDTO) {

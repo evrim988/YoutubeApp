@@ -17,10 +17,18 @@ import java.util.Optional;
 public class VideoService   {
 	private VideoRepository videoRepository;
 	private UserService userService;
+	private static VideoService instance;
 	
-	public VideoService() {
-		this.videoRepository=new VideoRepository();
-		this.userService=new UserService();
+	private VideoService() {
+		this.videoRepository=VideoRepository.getInstance();
+		this.userService=UserService.getInstance();
+	}
+
+	public static VideoService getInstance() {
+		if (instance == null) {
+			instance = new VideoService();
+		}
+		return instance;
 	}
 	
 	public Optional<VideoResponseDTO> save(VideoSaveRequestDTO videoSaveRequestDTO) {

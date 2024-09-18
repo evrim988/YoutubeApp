@@ -16,10 +16,23 @@ import java.util.Optional;
 public class CommentRepository implements ICrud<Comment> {
 	private final ConnectionProvider connectionProvider;
 	private String sql;
+	private static CommentRepository instance;
 	
-	public CommentRepository() {
+	private CommentRepository() {
 		this.connectionProvider=ConnectionProvider.getInstance();
 	}
+
+	public static CommentRepository getInstance() {
+		if (instance == null) {
+			instance = new CommentRepository();
+		}
+		return instance;
+	}
+
+
+
+
+
 	
 	@Override
 	public Optional<Comment> save(Comment comment) {

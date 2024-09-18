@@ -16,7 +16,7 @@ public class CommentController {
     private CommentService commentService;
 
     private CommentController(){
-        commentService = new CommentService();
+        commentService = CommentService.getInstance();
     }
     public static CommentController getInstance(){
         if(instance == null){

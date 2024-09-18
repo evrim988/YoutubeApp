@@ -17,10 +17,16 @@ import java.util.Optional;
 
 public class UserService  {
 	private final UserRepository userRepository;
+	private static UserService instance;
 	
-	
-	public UserService() {
-		this.userRepository = new UserRepository();
+	private UserService() {
+		this.userRepository = UserRepository.getInstance();
+	}
+	public static UserService getInstance() {
+		if (instance == null) {
+			instance = new UserService();
+		}
+		return instance;
 	}
 	
 	

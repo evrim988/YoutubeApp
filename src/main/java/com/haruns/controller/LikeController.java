@@ -21,7 +21,7 @@ public class LikeController {
 	}
 	
 	private LikeController() {
-		this.likeService = new LikeService();
+		this.likeService = LikeService.getInstance();
 	}
 	
 	public Optional<Like> save(LikeRequestDTO likeRequestDTO) {

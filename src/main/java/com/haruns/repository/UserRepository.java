@@ -17,9 +17,16 @@ import java.util.Optional;
 public class UserRepository implements ICrud<User> {
 	private final ConnectionProvider connectionProvider;
 	private String sql;
+	private static UserRepository instance;
 	
-	public UserRepository() {
+	private UserRepository() {
 		this.connectionProvider = ConnectionProvider.getInstance();
+	}
+	public static UserRepository getInstance() {
+		if (instance == null) {
+			instance = new UserRepository();
+		}
+		return instance;
 	}
 	
 	@Override

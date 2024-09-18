@@ -14,12 +14,23 @@ import java.util.Optional;
 public class CommentService {
     private CommentRepository commentRepository;
     private UserService userService;
+    private static CommentService instance;
 
 
-    public CommentService() {
-        this.commentRepository = new CommentRepository();
-        this.userService = new UserService();
+    private CommentService() {
+        this.commentRepository = CommentRepository.getInstance();
+        this.userService = UserService.getInstance();
     }
+
+    public static CommentService getInstance() {
+        if (instance == null) {
+            instance = new CommentService();
+        }
+        return instance;
+    }
+
+
+
 
     public Optional<CommentResponseDTO> save(CommentRequestDTO commentRequestDTO) {
         Comment comment;

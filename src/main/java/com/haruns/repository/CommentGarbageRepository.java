@@ -14,10 +14,22 @@ import java.util.Optional;
 public class CommentGarbageRepository {
 	private final ConnectionProvider connectionProvider;
 	private String sql = "";
-	
-	public CommentGarbageRepository() {
+	private static CommentGarbageRepository instance;
+
+	public static CommentGarbageRepository getInstance(){
+		if(instance == null){
+			instance = new CommentGarbageRepository();
+		}
+		return instance;
+	}
+
+
+	private CommentGarbageRepository() {
 		connectionProvider = ConnectionProvider.getInstance();
 	}
+
+
+
 	
 	public Optional<CommentGarbage> save(CommentGarbage commentGarbage) {
 		sql = "INSERT INTO tblcommentgarbage (comment_id,comment) VALUES (?,?)";

@@ -17,9 +17,17 @@ import java.util.Optional;
 public class LikeRepository implements ICrud<Like> {
 	private final ConnectionProvider connectionProvider;
 	private String sql;
+	private static LikeRepository instance;
 	
-	public LikeRepository() {
+	private LikeRepository() {
 		this.connectionProvider = ConnectionProvider.getInstance();
+	}
+
+	public static LikeRepository getInstance() {
+		if (instance == null) {
+			instance = new LikeRepository();
+		}
+		return instance;
 	}
 	
 	

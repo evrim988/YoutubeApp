@@ -17,7 +17,7 @@ public class UserController {
 	private UserService userService;
 	
 	private UserController() {
-		this.userService = new UserService();
+		this.userService = UserService.getInstance();
 		
 	}
 	
