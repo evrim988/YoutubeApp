@@ -2,6 +2,7 @@ package com.haruns.service;
 
 import com.haruns.dto.request.UserRequestDTO;
 import com.haruns.dto.response.UserResponseDTO;
+import com.haruns.entity.Comment;
 import com.haruns.entity.User;
 import com.haruns.entity.Video;
 import com.haruns.repository.UserRepository;
@@ -125,5 +126,14 @@ public class UserService  {
 			ConsoleTextUtils.printErrorMessage("Kullanıcının beğendiği video yok.");
 		}
 		return likedVideosOfUser;
+	}
+	
+	public Optional<User> findByUsername(String username){
+		Optional<User> user = userRepository.findByUsername(username);
+		return user;
+	}
+	
+	public List<Comment> getAllCommentsOfUser(User user) {
+		return userRepository.getAllCommentsOfUser(user);
 	}
 }

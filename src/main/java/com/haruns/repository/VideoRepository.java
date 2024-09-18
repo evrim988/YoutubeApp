@@ -183,7 +183,5 @@ public class VideoRepository implements ICrud<Video> {
 		catch (SQLException e) {
 			ConsoleTextUtils.printErrorMessage("VideoRepository: Goruntulenme arttırılırken hata oluştu.");
 		}
-		
-		
 	}
 }

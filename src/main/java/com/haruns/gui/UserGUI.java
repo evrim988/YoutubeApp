@@ -1,13 +1,9 @@
 package com.haruns.gui;
 
-import com.haruns.controller.CommentController;
-import com.haruns.controller.LikeController;
-import com.haruns.controller.UserController;
-import com.haruns.controller.VideoController;
+import com.haruns.controller.*;
 import com.haruns.dto.request.*;
-import com.haruns.entity.Like;
-import com.haruns.entity.User;
-import com.haruns.entity.Video;
+import com.haruns.entity.*;
+import com.haruns.model.UserModel;
 import com.haruns.model.VideoModel;
 import com.haruns.utility.ConsoleTextUtils;
 
@@ -21,6 +17,7 @@ public class UserGUI {
     private static VideoController videoController=VideoController.getInstance();
     private static CommentController commentController=CommentController.getInstance();
     private static LikeController likeController=LikeController.getInstance();
+    private static CommentGarbageController commentGarbageController=CommentGarbageController.getInstance();
    // private  MainGUI mainGUI=MainGUI.getInstance();
     private  User user;
 
@@ -70,8 +67,8 @@ public class UserGUI {
 
     public int userMenu() {
         ConsoleTextUtils.printTitle("KULLANICI MENÜSÜ");
-        ConsoleTextUtils.printMenuOptions("Video izle", "Kanalıma git", "Video ekle", "Videolarımı Görüntüke"
-                , "Video Sil", "Oturumu Kapat");
+        ConsoleTextUtils.printMenuOptions("Video izle", "Kanalıma git", "Video ekle", "Videolarımı Görüntüle"
+                , "Video Sil", "Kullanıcı Ara" ,"Oturumu Kapat");
         return ConsoleTextUtils.getIntUserInput("Seçiminiz: ");
     }
 
@@ -102,7 +99,19 @@ public class UserGUI {
                 videoSil();
                 userMenuOptions(userMenu());
                 break;
-            case 6:
+            case 6:{
+                User user1 = findUser();
+                if(user1!=null){
+                    UserModel userModel = new UserModel(user1);
+                    userModel.displayUser();
+                }
+                else {
+                    ConsoleTextUtils.printErrorMessage("Kullanıcı bulunamadı.");
+                }
+                
+                break;
+            }
+            case 7:
                 System.out.println("Ana menüye dönüyorsunuz.");
             default:
                 ConsoleTextUtils.printErrorMessage("Lütfen geçerli bir seçim yapınız.");
@@ -110,7 +119,14 @@ public class UserGUI {
 
         }
     }
-
+    public User findUser(){
+        String kullanici = ConsoleTextUtils.getStringUserInput("Ara: ");
+        Optional<User> byUsername = userController.findByUsername(kullanici);
+	    if (byUsername.isPresent()) {
+		    return byUsername.get();
+	    }
+        return null;
+    }
     public int videoIzle() {
         int secim=-1;
             ConsoleTextUtils.printMenuOptions("Beğen Menüsü", "Yorum Yap","Video yorumlarını göster", "Devam et");
@@ -247,7 +263,7 @@ public class UserGUI {
     public int kullaniciAyarlarMenu() {
         ConsoleTextUtils.printTitle("KANALIM");
         ConsoleTextUtils.printMenuOptions("Beğendiğim videolar", "Şifre değiştir",
-                "Video title değiştir", "Video açıklama değiştir", "Geri Dön");
+                "Video title değiştir", "Video açıklama değiştir","Attığım yorumu düzenle", "Geri Dön");
         return ConsoleTextUtils.getIntUserInput("Seçiminiz: ");
     }
 
@@ -268,7 +284,12 @@ public class UserGUI {
                 videoAciklamaDegistir();
                 kullaniciAyarlarMenuOptions(kullaniciAyarlarMenu());
                 break;
-            case 5:
+            case 5:{
+                yorumDuzenle();
+                kullaniciAyarlarMenuOptions(kullaniciAyarlarMenu());
+                break;
+            }
+            case 6:
                 ConsoleTextUtils.printSuccessMessage("Geri dönülüyor.");
                 return;
             default:
@@ -276,7 +297,26 @@ public class UserGUI {
                 kullaniciAyarlarMenuOptions(kullaniciAyarlarMenu());
         }
     }
-
+    
+    private void yorumDuzenle() {
+        List<Comment> allCommentsOfUser = userController.getAllCommentsOfUser(user);
+        CommentRequestDTO commentRequestDTO = new CommentRequestDTO();
+        Comment comment = yorumSec(allCommentsOfUser);
+        if (comment != null) {
+            String yorum = ConsoleTextUtils.getStringUserInput("Yorumunuzu giriniz: ");
+            commentRequestDTO.setComment(yorum);
+            commentRequestDTO.setId(comment.getId());
+            commentRequestDTO.setVideoId(comment.getVideo_id());
+            commentRequestDTO.setUsername(user.getUsername());
+            commentRequestDTO.setPassword(user.getPassword());
+            commentGarbageController.save(new CommentGarbage(comment.getId(), comment.getComment()));
+            commentController.update(commentRequestDTO);
+        }
+        else {
+            ConsoleTextUtils.printErrorMessage("Yorum bulunamadı.");
+        }
+    }
+    
     public void yorumYap(Video video) {
         CommentRequestDTO commentRequestDTO  = new CommentRequestDTO();
         String yorum = ConsoleTextUtils.getStringUserInput("Yorumunuz: ");
@@ -397,6 +437,26 @@ public class UserGUI {
             }
         }
 
+    }
+    
+    public Comment yorumSec(List<Comment> commentList) {
+        while (true) {
+            AtomicInteger sayac = new AtomicInteger(1);
+            if(commentList.isEmpty()){
+                System.out.println("Aramaya uygun video bulunamadı.");
+                return null;
+            }
+            commentList.forEach(comment -> {
+                System.out.println(sayac.getAndIncrement() + " " + comment);
+            });
+            int secim = ConsoleTextUtils.getIntUserInput("Yorum seç: ");
+            try {
+                return commentList.get(secim - 1);
+            } catch (IndexOutOfBoundsException e) {
+                ConsoleTextUtils.printErrorMessage("Lütfen geçerli seçim yapınız.");
+            }
+        }
+        
     }
 
 }

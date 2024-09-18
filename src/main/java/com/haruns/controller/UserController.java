@@ -2,6 +2,7 @@ package com.haruns.controller;
 
 import com.haruns.dto.request.UserRequestDTO;
 import com.haruns.dto.response.UserResponseDTO;
+import com.haruns.entity.Comment;
 import com.haruns.entity.User;
 import com.haruns.entity.Video;
 import com.haruns.service.UserService;
@@ -66,5 +67,13 @@ public class UserController {
 	
 	public List<Video>  getLikedVideosOfUser(User user){
 		return userService.getLikedVideosOfUser(user);
+	}
+	
+	public Optional<User> findByUsername(String username){
+		Optional<User> user = userService.findByUsername(username);
+		return user;
+	}
+	public List<Comment> getAllCommentsOfUser(User user) {
+		return userService.getAllCommentsOfUser(user);
 	}
 }
